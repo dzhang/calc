@@ -288,8 +288,8 @@ Public Function RunCalc()
   
   ' get seqno to be calculated, used in stored procedure
   DoCmd.RunSQL ("UPDATE tmpDataEntrySeq SET CalcLoop = -1, Updated = Now(), UpdateBy = CurrentUser(), WriteToNet = -1 WHERE (((tmpDataEntrySeq.CalcSamp)=-1));")
-  DoCmd.RunSQL ("INSERT INTO DataEntrySeq (SeqNo, WorkOrder, SampID, SampType, SampTestNo, TestCode, AnalDate, UpdateBy, Pmoist, NoMoistCorrect, BackFracFac, DF, PrepFac, OriginalFac, SigFigsMDL, ConvFac, BCMethod, BLKref, BackRef, RPDref, SigFigs, SpkFac, Dept, SPKref, Col2Ref, LotNo, WSID) " & _
-    "SELECT SeqNo, WorkOrder, SampID, SampType, SampTestNo, TestCode, AnalDate, UpdateBy, Pmoist, NoMoistCorrect, BackFracFac, DF, PrepFac, OriginalFac, SigFigsMDL, ConvFac, BCMethod, BLKref, BackRef, RPDref, SigFigs, SpkFac, Dept, SPKref, Col2Ref, LotNo, WSID.WSID FROM tmpDataEntrySeq, WSID " & _
+  DoCmd.RunSQL ("INSERT INTO DataEntrySeq (SeqNo, WorkOrder, SampID, RunID, SampType, SampTestNo, TestCode, AnalDate, UpdateBy, Pmoist, NoMoistCorrect, BackFracFac, DF, PrepFac, OriginalFac, SigFigsMDL, ConvFac, BCMethod, BLKref, BackRef, RPDref, SigFigs, SpkFac, Dept, SPKref, Col2Ref, LotNo, WSID) " & _
+    "SELECT SeqNo, WorkOrder, SampID, RunID, SampType, SampTestNo, TestCode, AnalDate, UpdateBy, Pmoist, NoMoistCorrect, BackFracFac, DF, PrepFac, OriginalFac, SigFigsMDL, ConvFac, BCMethod, BLKref, BackRef, RPDref, SigFigs, SpkFac, Dept, SPKref, Col2Ref, LotNo, WSID.WSID FROM tmpDataEntrySeq, WSID " & _
     "WHERE tmpDataEntrySeq.CalcSamp=-1;")
   
   Dim db As DAO.Database
@@ -313,8 +313,10 @@ Public Function RunCalc()
   DoCmd.SetWarnings True
   Exit Function
 CalcErr:
+  ' reset flag
+  DoCmd.RunSQL ("UPDATE tmpDataEntrySeq SET CalcLoop = 0, Updated = NULL, UpdateBy = NULL, WriteToNet = 0 WHERE (((tmpDataEntrySeq.CalcSamp)=-1));")
   DoCmd.SetWarnings True
-  MsgBox Err.Description, vbInformation
+  MsgBox "Error in Calculating! " & Err.Description, vbCritical
 End Function
 
 

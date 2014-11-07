@@ -37,8 +37,9 @@ BEGIN TRY;
   WHERE a.RawVal Is Null AND a.AnalyteType='A' AND t.PeakRef<>0;
 
   -- Clears out the old quals and resets RPD and REC = 0
+  -- Qual can't be null, it may cause Access report error later on
   UPDATE a
-  SET Qual = Null, CalcVal = 0, RPD = 0, REC = 0
+  SET Qual = NULL, CalcVal = 0, RPD = 0, REC = 0
   FROM AnalRunSeqResult a INNER JOIN DataEntrySeq d ON a.SeqNo=d.SeqNo 
   WHERE d.WSID=@wsid;
 
@@ -227,15 +228,10 @@ BEGIN TRY;
   FROM DataEntrySeq d INNER JOIN AnalRunSeqResult a ON d.SeqNo = a.SeqNo
   WHERE a.BLKrefval<>0 And a.BLKrefval>a.PQL AND a.CalcVal>a.PQL AND d.WSID=@wsid;
   
-  /*
-  UPDATE tmpDataEntrySeq INNER JOIN AnalRunSeqResult ON tmpDataEntrySeq.SeqNo = AnalRunSeqResult.SeqNo SET AnalRunSeqResult.Qual = "B"
-WHERE (((AnalRunSeqResult.BLKrefval)<>0 And (AnalRunSeqResult.BLKrefval)>[rawPQL]) AND ((tmpDataEntrySeq.CalcSamp)=-1) AND ((AnalRunSeqResult.CalcVal)>[PQL]) AND ((tmpDataEntrySeq.RunID) Like "voa*"));
-
   UPDATE a
   SET Qual = 'B'
   FROM DataEntrySeq d INNER JOIN AnalRunSeqResult a ON d.SeqNo = a.SeqNo
   WHERE a.BLKrefval<>0 And a.BLKrefval>a.rawPQL AND a.CalcVal>a.PQL AND d.RunID LIKE 'voa%' AND d.WSID=@wsid;
-  */
 
   -- Updates Qual to J and  removes 1 SigFig from FinalVal when MDL < CalcVal  < PQL
   UPDATE a
@@ -324,7 +320,7 @@ WHERE (((AnalRunSeqResult.BLKrefval)<>0 And (AnalRunSeqResult.BLKrefval)>[rawPQL
   WHERE a.AnalyteType='A' AND d.WSID=@wsid;
 
   UPDATE a
-  SET Qual = replace(Qual, '*', '')
+  SET Qual = CASE WHEN REPLACE(Qual, '*', '')='' THEN NULL ELSE REPLACE(Qual, '*', '') END
   FROM DataEntrySeq d INNER JOIN AnalRunSeqResult a ON d.SeqNo = a.SeqNo
     INNER JOIN Tests t ON d.TestCode = t.TestCode
     INNER JOIN Analytes al ON (t.TestNo = al.TestNo) AND (al.Analyte = a.Analyte) 

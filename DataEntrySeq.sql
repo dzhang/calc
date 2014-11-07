@@ -10,6 +10,7 @@ GO
 CREATE TABLE [dbo].[DataEntrySeq](
 	[SeqNo] [int] NOT NULL,
 	[SampID] [varchar](50) NOT NULL,
+  [RunID] [varchar](50) NOT NULL,
 	[TestCode] [varchar](50) NOT NULL,
 	[SampType] [varchar](50) NOT NULL,
   [PrepFac] [float] NOT NULL,
