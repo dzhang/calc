@@ -178,7 +178,7 @@ BEGIN TRY;
   UPDATE a
   SET SpkVal = a.SpkVal*d.DF
   FROM AnalRunSeqResult a INNER JOIN DataEntrySeq d ON a.SeqNo=d.SeqNo
-  WHERE d.Dept Like '%VOA' AND a.RawSpkVal<>0 AND d.WSID=@wsid;
+  WHERE (d.Dept='AT' OR d.Dept Like '%VOA') AND a.RawSpkVal<>0 AND d.WSID=@wsid;
 
   -- Updates SpkVal = [SpkVal]*DF for PDS Samples to handle sample dilutions
   UPDATE a
