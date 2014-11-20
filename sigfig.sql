@@ -14,7 +14,7 @@ AS
 BEGIN
 
 DECLARE @sign SMALLINT, @magnitude INT;
-DECLARE @conversion DECIMAL(25,13), @converted DECIMAL(25,13), @frac DECIMAL(25,13), @factor DECIMAL(25,13), @epa DECIMAL(25,13);
+DECLARE @conversion DECIMAL(38,17), @converted DECIMAL(38,17), @frac DECIMAL(38,17), @factor DECIMAL(38,17), @epa DECIMAL(38,17);
 
 IF @number = 0 RETURN 0;
     
@@ -23,7 +23,7 @@ SELECT @number = ABS(@number);
 
 SELECT @magnitude = FLOOR(LOG10(@number)) + 1;
 -- need to cast 10 to decimal, otherwise conversion would be calculated as integer, and could be 0
-SELECT @conversion = POWER(CAST(10 AS DECIMAL(25,13)), (@sf - @magnitude));
+SELECT @conversion = POWER(CAST(10 AS DECIMAL(38,17)), (@sf - @magnitude));
 SELECT @converted = @number * @conversion;
 
 SELECT @frac = @converted - CAST(FLOOR(@converted) AS DECIMAL);
